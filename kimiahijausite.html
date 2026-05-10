@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoLab Adventure | Final Mission</title>
+    <style>
+        :root {
+            --neon: #2ecc71; --cyan: #00d2ff; --dark: #0a0e14;
+            --glass: rgba(255, 255, 255, 0.05); --border: rgba(46, 204, 113, 0.3);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        body { background: var(--dark); color: #e6edf3; overflow: hidden; }
+
+        /* Navigation */
+        nav {
+            position: fixed; bottom: 0; width: 100%; height: 70px;
+            background: rgba(10, 14, 20, 0.95); display: flex;
+            justify-content: space-around; align-items: center;
+            z-index: 1000; border-top: 1px solid var(--border);
+        }
+        .nav-item { background: none; border: none; color: #555; cursor: pointer; font-size: 0.7rem; transition: 0.3s; }
+        .nav-item.active { color: var(--neon); transform: translateY(-5px); }
+        .nav-item i { display: block; font-size: 1.5rem; margin-bottom: 3px; }
+
+        /* Pages */
+        .page {
+            display: none; height: 100vh; width: 100%;
+            padding: 20px 20px 100px; overflow-y: auto;
+            animation: slideUp 0.4s ease-out;
+        }
+        .page.active { display: block; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Components */
+        .card { background: var(--glass); border: 1px solid var(--border); border-radius: 15px; padding: 20px; margin-bottom: 15px; backdrop-filter: blur(10px); }
+        .btn { background: transparent; border: 2px solid var(--neon); color: var(--neon); padding: 12px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: bold; margin-top: 10px; }
+        .btn:hover { background: var(--neon); color: var(--dark); box-shadow: 0 0 20px var(--neon); }
+        
+        /* Prinsip List */
+        .prinsip-box { display: flex; gap: 15px; align-items: flex-start; margin-bottom: 15px; }
+        .num { background: var(--neon); color: var(--dark); min-width: 30px; height: 30px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; }
+
+        /* Game & Mixer */
+        #game-canvas { width: 100%; height: 300px; background: #000; position: relative; overflow: hidden; border-radius: 15px; touch-action: none; }
+        .beaker { width: 80px; height: 120px; border: 3px solid var(--cyan); border-top: none; border-radius: 0 0 15px 15px; margin: 20px auto; position: relative; overflow: hidden; }
+        .liquid { position: absolute; bottom: 0; width: 100%; height: 0%; background: var(--neon); transition: 0.6s; }
+
+        /* Quiz */
+        .opt { display: block; width: 100%; padding: 15px; margin: 10px 0; background: rgba(255,255,255,0.1); border: 1px solid #333; border-radius: 10px; color: white; cursor: pointer; text-align: left; transition: 0.2s; }
+        .opt:hover { background: var(--border); }
+    </style>
+</head>
+<body>
+
+    <!-- Navigasi -->
+    <nav>
+        <button class="nav-item active" onclick="go('home', this)"><i>🏠</i>Home</button>
+        <button class="nav-item" onclick="go('prinsip', this)"><i>📜</i>12 Prinsip</button>
+        <button class="nav-item" onclick="go('sdg', this)"><i>🌍</i>SDG</button>
+        <button class="nav-item" onclick="go('lab', this)"><i>🧪</i>Lab</button>
+        <button class="nav-item" onclick="go('quiz', this)"><i>🎯</i>Misi</button>
+    </nav>
+
+    <!-- 1. HOME -->
+    <div id="home" class="page active">
+        <div style="text-align: center; margin-top: 50px;">
+            <h1 style="color: var(--neon); text-shadow: 0 0 15px var(--neon);">EcoLab Adventure</h1>
+            <p style="color: var(--cyan); margin-bottom: 30px;">Save the Earth with Green Chemistry</p>
+            <div class="card">
+                <p>"Bumi tahun 2050 sedang krisis. Pelajari 12 Prinsip Kimia Hijau dan selesaikan misi di Lab untuk menyelamatkan ekosistem!"</p>
+            </div>
+            <button class="btn" onclick="initAudio(); go('prinsip')">Mulai Petualangan</button>
+            <p style="font-size: 0.7rem; margin-top: 10px; opacity: 0.5;">*Ketuk Mulai untuk mengaktifkan suara</p>
+        </div>
+    </div>
+
+    <!-- 2. 12 PRINSIP (LENGKAP) -->
+    <div id="prinsip" class="page">
+        <h2 style="color: var(--neon); margin-bottom: 20px;">12 Prinsip Kimia Hijau</h2>
+        <div id="prinsip-list">
+            <!-- Isi di-generate via JS agar rapi -->
+        </div>
+    </div>
+
+    <!-- 3. SDG PAGE -->
+    <div id="sdg" class="page">
+        <h2 style="color: var(--cyan); margin-bottom: 20px;">Kaitan dengan SDG</h2>
+        <div class="card" style="border-left: 5px solid #e5243b;">
+            <h3>SDG 3: Sehat & Sejahtera</h3>
+            <p>Mengurangi penggunaan bahan kimia beracun yang merusak kesehatan manusia.</p>
+        </div>
+        <div class="card" style="border-left: 5px solid #26bde2;">
+            <h3>SDG 6: Air Bersih</h3>
+            <p>Mencegah kontaminasi limbah cair kimia ke sumber air masyarakat.</p>
+        </div>
+        <div class="card" style="border-left: 5px solid #fcc30b;">
+            <h3>SDG 7: Energi Bersih</h3>
+            <p>Menggunakan proses kimia yang hemat energi dan berbasis energi terbarukan.</p>
+        </div>
+        <div class="card" style="border-left: 5px solid #bf8b2e;">
+            <h3>SDG 12: Produksi Bertanggung Jawab</h3>
+            <p>Mendesain produk yang mudah terurai dan tidak menumpuk menjadi sampah.</p>
+        </div>
+        <div class="card" style="border-left: 5px solid #3f7e44;">
+            <h3>SDG 13: Penanganan Iklim</h3>
+            <p>Mengurangi emisi gas rumah kaca dari pabrik kimia industri.</p>
+        </div>
+    </div>
+
+    <!-- 4. LAB (MIXER & GAME) -->
+    <div id="lab" class="page">
+        <h2 style="color: var(--neon);">Mini Lab Simulation</h2>
+        <div class="card">
+            <h3>Mixer Kimia Hijau</h3>
+            <div class="beaker"><div id="liq" class="liquid"></div></div>
+            <p id="mix-msg" style="text-align: center; font-size: 0.8rem; min-height: 20px;"></p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <button class="btn" style="font-size: 0.7rem;" onclick="mix('safe')">Pelarut Air</button>
+                <button class="btn" style="font-size: 0.7rem; border-color: red;" onclick="mix('toxic')">Merkuri</button>
+                <button class="btn" style="font-size: 0.7rem;" onclick="mix('safe')">Katalis Alam</button>
+                <button class="btn" style="font-size: 0.7rem; border-color: red;" onclick="mix('toxic')">Timbal</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Eco Catch Game</h3>
+            <div id="game-canvas"><div id="player" style="position:absolute; bottom:10px; width:50px; height:10px; background:var(--cyan); border-radius:5px;"></div></div>
+            <p>Skor: <span id="score">0</span></p>
+            <button class="btn" onclick="startCatch()">Mainkan Game</button>
+        </div>
+    </div>
+
+    <!-- 5. QUIZ MISI -->
+    <div id="quiz" class="page">
+        <h2 style="color: var(--neon);">Final Mission Quiz</h2>
+        <div id="q-box" class="card">
+            <div id="q-text" style="font-weight: bold; margin-bottom: 20px;">Menunggu instruksi...</div>
+            <div id="q-opts"></div>
+        </div>
+        <div id="q-res" class="card" style="display: none; text-align: center;">
+            <h1 id="total-score">0</h1>
+            <p id="rank"></p>
+            <button class="btn" onclick="go('home')">Kembali ke Home</button>
+        </div>
+    </div>
+
+    <script>
+        // DATA PRINSIP
+        const prinsipData = [
+            "Mencegah terbentuknya limbah.",
+            "Ekonomi Atom: Memaksimalkan bahan baku.",
+            "Sintesis kimia yang tidak berbahaya.",
+            "Mendesain bahan kimia yang aman.",
+            "Gunakan pelarut & bahan pembantu aman.",
+            "Desain untuk efisiensi energi.",
+            "Gunakan bahan baku terbarukan.",
+            "Kurangi produk turunan/derivat.",
+            "Gunakan katalis, bukan reagen stoikiometrik.",
+            "Desain produk yang mudah terurai.",
+            "Analisis real-time untuk cegah polusi.",
+            "Minimalisir potensi kecelakaan kerja."
+        ];
+
+        // AUDIO SYSTEM
+        let aCtx;
+        function initAudio() {
+            if(!aCtx) aCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        function beep(f, t = 'sine') {
+            if(!aCtx) return;
+            let o = aCtx.createOscillator(), g = aCtx.createGain();
+            o.type = t; o.frequency.value = f;
+            o.connect(g); g.connect(aCtx.destination);
+            o.start(); g.gain.exponentialRampToValueAtTime(0.0001, aCtx.currentTime + 0.3);
+            o.stop(aCtx.currentTime + 0.3);
+        }
+
+        // NAVIGATION
+        function go(id, el) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            if(el) {
+                document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+                el.classList.add('active');
+            }
+            if(id === 'quiz') startQuiz();
+            beep(440);
+        }
+
+        // GENERATE PRINSIP
+        const pList = document.getElementById('prinsip-list');
+        prinsipData.forEach((p, i) => {
+            pList.innerHTML += `<div class="card prinsip-box"><div class="num">${i+1}</div><div>${p}</div></div>`;
+        });
+
+        // LAB MIXER
+        let mixLvl = 0, mixScore = 0;
+        function mix(type) {
+            if(mixLvl >= 3) return;
+            mixLvl++;
+            document.getElementById('liq').style.height = (mixLvl * 33) + "%";
+            if(type === 'safe') { mixScore++; beep(880); } else { mixScore--; beep(150, 'square'); }
+            
+            if(mixLvl === 3) {
+                let msg = mixScore >= 2 ? "✅ PRODUK RAMAH LINGKUNGAN!" : "❌ PRODUK BERBAHAYA!";
+                document.getElementById('mix-msg').innerText = msg;
+                setTimeout(() => { mixLvl = 0; mixScore = 0; document.getElementById('liq').style.height = "0%"; }, 2000);
+            }
+        }
+
+        // ECO CATCH GAME
+        let gameOn = false, score = 0;
+        const canvas = document.getElementById('game-canvas');
+        const player = document.getElementById('player');
+        let px = 100;
+
+        canvas.addEventListener('touchmove', e => {
+            let r = canvas.getBoundingClientRect();
+            px = e.touches[0].clientX - r.left - 25;
+            player.style.left = px + "px";
+            e.preventDefault();
+        });
+
+        function startCatch() {
+            if(gameOn) return; gameOn = true; score = 0;
+            const spawn = setInterval(() => {
+                if(!gameOn) { clearInterval(spawn); return; }
+                const item = document.createElement('div');
+                const isGood = Math.random() > 0.4;
+                item.innerHTML = isGood ? '🌱' : '💀';
+                item.style.position = 'absolute';
+                item.style.left = Math.random() * 250 + "px";
+                item.style.top = "0px";
+                canvas.appendChild(item);
+
+                let fall = setInterval(() => {
+                    let top = parseInt(item.style.top);
+                    if(top > 270 && parseInt(item.style.left) > px - 20 && parseInt(item.style.left) < px + 40) {
+                        score += isGood ? 10 : -20;
+                        document.getElementById('score').innerText = score;
+                        beep(isGood ? 1000 : 200);
+                        item.remove(); clearInterval(fall);
+                    } else if(top > 300) { item.remove(); clearInterval(fall); }
+                    else { item.style.top = (top + 5) + "px"; }
+                }, 30);
+            }, 1000);
+            setTimeout(() => { gameOn = false; alert("Waktu Habis! Skor: " + score); }, 15000);
+        }
+
+        // QUIZ SYSTEM
+        const questions = [
+            {q: "Mencegah limbah lebih baik daripada mengolahnya. Ini prinsip nomor?", o: ["1", "5", "12"], c: 0},
+            {q: "Ekonomi atom fokus pada?", o: ["Harga atom", "Efisiensi atom bahan baku", "Jumlah elektron"], c: 1},
+            {q: "Pelarut apa yang paling hijau?", o: ["Benzena", "Air", "Aseton"], c: 1},
+            {q: "Prinsip ke-7 menyarankan bahan baku bersifat?", o: ["Fosil", "Terbarukan", "Langka"], c: 1},
+            {q: "SDG 12 berkaitan dengan?", o: ["Produksi Bertanggung Jawab", "Kesehatan", "Pendidikan"], c: 0},
+            {q: "Katalis digunakan karena?", o: ["Bisa dipakai berulang & efisien", "Harganya mahal", "Warnanya bagus"], c: 0},
+            {q: "Produk kimia hijau harus mudah...?", o: ["Meledak", "Terurai", "Membeku"], c: 1},
+            {q: "Prinsip ke-12 bertujuan mencegah...?", o: ["Kecelakaan kerja", "Keuntungan", "Kreativitas"], c: 0},
+            {q: "Analisis real-time dilakukan untuk?", o: ["Melihat cuaca", "Mencegah polutan", "Mencatat gaji"], c: 1},
+            {q: "Bahan kimia yang aman didesain untuk mengurangi?", o: ["Toksisitas", "Warna", "Berat"], c: 0}
+        ];
+        let curQ = 0, qScore = 0;
+
+        function startQuiz() {
+            curQ = 0; qScore = 0;
+            document.getElementById('q-box').style.display = 'block';
+            document.getElementById('q-res').style.display = 'none';
+            showQ();
+        }
+
+        function showQ() {
+            const q = questions[curQ];
+            document.getElementById('q-text').innerText = `${curQ + 1}. ${q.q}`;
+            const oBox = document.getElementById('q-opts');
+            oBox.innerHTML = '';
+            q.o.forEach((opt, i) => {
+                const b = document.createElement('button');
+                b.className = 'opt'; b.innerText = opt;
+                b.onclick = () => {
+                    if(i === q.c) { qScore += 10; beep(1200); } else { beep(300, 'square'); }
+                    curQ++;
+                    if(curQ < questions.length) showQ(); else endQuiz();
+                };
+                oBox.appendChild(b);
+            });
+        }
+
+        function endQuiz() {
+            document.getElementById('q-box').style.display = 'none';
+            document.getElementById('q-res').style.display = 'block';
+            document.getElementById('total-score').innerText = qScore;
+            document.getElementById('rank').innerText = qScore >= 80 ? "Hebat, Kamu Green Scientist! 🌱" : "Ayo belajar lagi! 🌍";
+        }
+    </script>
+</body>
+</html>
